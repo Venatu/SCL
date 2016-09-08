@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalysisEngine", "AnalysisE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCL", "SCL\SCL.csproj", "{2F61DBF4-13DC-4881-B750-46DB8E494620}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalysisEngineTests", "AnalysisEngineTests\AnalysisEngineTests.csproj", "{6B89D130-CA63-468B-8DB7-87A9ED17DECD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{2F61DBF4-13DC-4881-B750-46DB8E494620}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F61DBF4-13DC-4881-B750-46DB8E494620}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F61DBF4-13DC-4881-B750-46DB8E494620}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B89D130-CA63-468B-8DB7-87A9ED17DECD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B89D130-CA63-468B-8DB7-87A9ED17DECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B89D130-CA63-468B-8DB7-87A9ED17DECD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B89D130-CA63-468B-8DB7-87A9ED17DECD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
