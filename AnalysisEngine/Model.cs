@@ -15,7 +15,7 @@ namespace Venatu.SCL.AnalysisEngine
         Matrix<double> JointCoordinates, SupportData, MemberData, LoadData;
         Vector<double> ElasticModulus, CrossSectionalArea, JointLoads;
 
-        public Vector<double> Displacements;
+        public Vector<double> Displacements, Reactions;
 
         public Model(int NumberOfJoints, int NumberOfSupports, int NumberOfMaterials, int NumberOfSections, int NumberOfMembers, int NumberOfLoads)
         {
@@ -71,6 +71,7 @@ namespace Venatu.SCL.AnalysisEngine
         {
             int NoR = NumberOfRestraints();
             int NDoF = 2 * JointCoordinates.RowCount - NoR; //Calulate number of degrees of freedom of the model
+            Reactions = V.Dense(NoR);
 
             //Create the helper matrix
             Vector<double> StructureCoordinates = AssignStructureNumbers(NDoF);
@@ -79,30 +80,31 @@ namespace Venatu.SCL.AnalysisEngine
             Matrix<double> S = M.Dense(NDoF, NDoF);
 
             //Populate S matrix
-            for(int i = 0; i < MemberData.RowCount; i++)
-            {               
+            for (int i = 0; i < MemberData.RowCount; i++)
+            {
                 //Generate in the member stiffnes matrix in global coordinates
                 var GK = BuildStiffnesMatrix(i);
-                
+
                 //Store the member matrix in the global array
-                for(int j = 0; j < GK.RowCount; j++)
+                for (int j = 0; j < GK.RowCount; j++)
                 {
                     int startJointID = (int)MemberData[i, 0];
                     int endJointID = (int)MemberData[i, 1];
 
                     double N1;
-                    if(j<2)
+                    if (j < 2)
                     {
                         N1 = (startJointID) * 2 + j;
-                    }else
+                    }
+                    else
                     {
-                        N1 = (endJointID) * 2 + (j-2);
+                        N1 = (endJointID) * 2 + (j - 2);
                     }
                     int jointCode1 = (int)StructureCoordinates[(int)N1];
 
-                    if(jointCode1 < NDoF)
+                    if (jointCode1 < NDoF)
                     {
-                        for(int k = 0; k < GK.ColumnCount; k++)
+                        for (int k = 0; k < GK.ColumnCount; k++)
                         {
                             double N2;
                             if (k < 2)
@@ -121,7 +123,7 @@ namespace Venatu.SCL.AnalysisEngine
                             }
                         }
                     }
-                }               
+                }
             }
 
             //Stiffness matrix created, build load matrix
@@ -133,7 +135,7 @@ namespace Venatu.SCL.AnalysisEngine
                 int XCoord = (int)StructureCoordinates[(int)(jointNumber) * 2];
                 int YCoord = (int)StructureCoordinates[(int)(jointNumber) * 2 + 1];
 
-                if(XCoord < NDoF)
+                if (XCoord < NDoF)
                 {
                     P[XCoord] = LoadData[i, 0];
                 }
@@ -144,7 +146,97 @@ namespace Venatu.SCL.AnalysisEngine
                 }
             }
 
+            //Solve for global displacements
             Displacements = S.Solve(P);
+
+            
+
+            //Iterate over each member
+            for (int i = 0; i < MemberData.RowCount; i++)
+            {
+                //Reverse the matrix and store global displacements in a joint vector. Convert defelction vector so it gives a matrix for the end member deflections
+                //Going to be honest, not sure about this code block. Seems to work however so theres that. Need more checkign to be sure
+                var jointDeflection = V.Dense(2 * 2);
+                int startJointID = (int)MemberData[i, 0];
+                int endJointID = (int)MemberData[i, 1];
+
+                int j = startJointID * 2;
+                for (int k = 0; k < 2; k++)
+                {
+                    var n = (int)StructureCoordinates[(int)j];
+                    j++;
+                    if (n < NDoF)
+                    {
+                        jointDeflection[k] = Displacements[n];
+                    }
+                }
+                j = endJointID * 2;
+                for (int k = 2; k < 4; k++)
+                {
+                    var n = (int)StructureCoordinates[(int)j];
+                    j++;
+                    if (n < NDoF)
+                    {
+                        jointDeflection[k] = Displacements[n];
+                    }
+                }
+
+                //Determine transformation matrix for the member
+                //Calculate the length using Pythagorean theorem
+                double Length = Math.Pow(Math.Pow(JointCoordinates[startJointID, 0] - JointCoordinates[endJointID, 0], 2) + Math.Pow(JointCoordinates[startJointID, 1] - JointCoordinates[endJointID, 1], 2), 0.5);
+                double cosTheta = (JointCoordinates[endJointID, 0] - JointCoordinates[startJointID, 0]) / Length;
+                double sinTheta = (JointCoordinates[endJointID, 1] - JointCoordinates[startJointID, 1]) / Length;
+
+                var TransformationMatrix = M.Dense(4, 4);
+                TransformationMatrix[0, 0] = cosTheta;
+                TransformationMatrix[0, 1] = sinTheta;
+                TransformationMatrix[2, 2] = cosTheta;
+                TransformationMatrix[2, 3] = sinTheta;
+                TransformationMatrix[1, 0] = -sinTheta;
+                TransformationMatrix[1, 1] = cosTheta;
+                TransformationMatrix[3, 2] = -sinTheta;
+                TransformationMatrix[3, 3] = cosTheta;
+
+                var localDisplacement = TransformationMatrix.Multiply(jointDeflection);
+
+                //Calculate the local stiffness matrix
+                double EM = ElasticModulus[(int)MemberData[i, 2]];
+                double Area = CrossSectionalArea[(int)MemberData[i, 3]];
+                double Z = EM * Area / Length;
+
+                var BK = M.Dense(4, 4);
+                BK[0, 0] = Z;
+                BK[0, 2] = -Z;
+                BK[2, 0] = -Z;
+                BK[2, 2] = Z;
+
+                //Local end forces
+                var Q = BK.Multiply(localDisplacement);
+
+                //Global end forces
+                var F = TransformationMatrix.Transpose().Multiply(Q); 
+                
+                //Store global end forces in reaction matrix
+                for(int k = 0; k < 4; k++)
+                {
+                    int l1;
+                    if(k<2)
+                    {
+                        l1 = startJointID * 2 + k;
+                    }
+                    else
+                    {
+                        //This right??
+                        l1 = endJointID * 2 + (k - 2);                        
+                    }
+
+                    var n = (int)StructureCoordinates[l1];
+                    if (n >= NDoF)
+                    {
+                        Reactions[n - NDoF] = Reactions[n - NDoF] + F[k];
+                    }
+                }
+            }
         }
 
         public void PrintInput()
