@@ -13,7 +13,9 @@ namespace Venatu.SCL.AnalysisEngine
         VectorBuilder<double> V = Vector<double>.Build;
 
         Matrix<double> JointCoordinates, SupportData, MemberData, LoadData;
-        Vector<double> ElasticModulus, CrossSectionalArea, JointLoads;        
+        Vector<double> ElasticModulus, CrossSectionalArea, JointLoads;
+
+        public Vector<double> Displacements;
 
         public Model(int NumberOfJoints, int NumberOfSupports, int NumberOfMaterials, int NumberOfSections, int NumberOfMembers, int NumberOfLoads)
         {
@@ -142,8 +144,7 @@ namespace Venatu.SCL.AnalysisEngine
                 }
             }
 
-            var D = S.Solve(P);
-
+            Displacements = S.Solve(P);
         }
 
         public void PrintInput()
@@ -160,11 +161,11 @@ namespace Venatu.SCL.AnalysisEngine
 
             for(int i = 0; i < SupportData.RowCount; i++)
             {
-                if(SupportData[i,0] != 0)
+                if(SupportData[i,1] != 0)
                 {
                     result++;
                 }
-                if (SupportData[i, 1] != 0)
+                if (SupportData[i, 2] != 0)
                 {
                     result++;
                 }
@@ -176,7 +177,8 @@ namespace Venatu.SCL.AnalysisEngine
         private Vector<double> AssignStructureNumbers(int DegreesOfFreedom)
         {
             int JointCount = 0;
-            int RestraintCount = DegreesOfFreedom - 1;
+            int RestraintCount = DegreesOfFreedom;
+            //int RestraintCount = DegreesOfFreedom;
 
             var result = V.Dense(JointCoordinates.RowCount * 2);
 

@@ -30,6 +30,11 @@ namespace UI
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
+            Example2();
+        }
+
+        public void Example1()
+        {
             Model m = new Model(6, 3, 2, 3, 10, 3);
 
             m.SetSupport(0, 0, 1, 1);
@@ -64,6 +69,33 @@ namespace UI
             m.SetLoad(0, 1, 0, -75);
             m.SetLoad(1, 4, 25, 0);
             m.SetLoad(2, 5, 0, -60);
+
+            m.Calculate();
+        }
+
+        public void Example2()
+        {
+            Model m = new Model(4, 3, 1, 2, 3, 1);
+
+            m.SetJointCoordinate(0, 12 * 12, 16 * 12);
+            m.SetJointCoordinate(1, 0, 0);
+            m.SetJointCoordinate(2, 12 * 12, 0);
+            m.SetJointCoordinate(3, 24 * 12, 0);
+
+            m.SetSupport(0, 1, 1, 1);
+            m.SetSupport(1, 2, 1, 1);
+            m.SetSupport(2, 3, 1, 1);
+
+            m.SetMaterial(0, 29000);
+
+            m.SetSection(0, 8);
+            m.SetSection(1, 6);
+
+            m.SetMember(0, 1, 0, 0, 0);
+            m.SetMember(1, 2, 0, 0, 1);
+            m.SetMember(2, 3, 0, 0, 0);
+
+            m.SetLoad(0, 0, 150, -300);
 
             m.Calculate();
         }
