@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCL", "SCL\SCL.csproj", "{2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalysisEngineTests", "AnalysisEngineTests\AnalysisEngineTests.csproj", "{6B89D130-CA63-468B-8DB7-87A9ED17DECD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevitLink", "RevitLink\RevitLink.csproj", "{EB6EA7F5-D8F0-428E-9E60-82575F3EB46D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{6B89D130-CA63-468B-8DB7-87A9ED17DECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B89D130-CA63-468B-8DB7-87A9ED17DECD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B89D130-CA63-468B-8DB7-87A9ED17DECD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB6EA7F5-D8F0-428E-9E60-82575F3EB46D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB6EA7F5-D8F0-428E-9E60-82575F3EB46D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB6EA7F5-D8F0-428E-9E60-82575F3EB46D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB6EA7F5-D8F0-428E-9E60-82575F3EB46D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
