@@ -48,10 +48,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnalyseModel.cs" />
     <Compile Include="ExportModel.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SyncModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AnalysisEngine\AnalysisEngine.csproj">
+      <Project>{38ebb233-b729-4e32-a413-2b05fbc9ee46}</Project>
+      <Name>AnalysisEngine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SCL\SCL.csproj">
+      <Project>{2f61dbf4-13dc-4881-b750-46db8e494620}</Project>
+      <Name>SCL</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

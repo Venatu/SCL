@@ -37,11 +37,11 @@ namespace Venatu.SCL.RevitLink
             // Create two push buttons
             PushButtonData button1 = new PushButtonData("SyncButton", "Sync Model",
                 AssemblyDirectory, "Venatu.SCL.RevitLink.SyncModel");
-            PushButtonData button2 = new PushButtonData("Button2", "My Button #2",
-                AssemblyDirectory, "Venatu.SCL.RevitLink.SyncModel");
+            PushButtonData button2 = new PushButtonData("AnalyseButton", "Analyse",
+                AssemblyDirectory, "Venatu.SCL.RevitLink.AnalyseModel");
 
             // Create a ribbon panel
-            RibbonPanel m_projectPanel = application.CreateRibbonPanel(tabName, "This Panel Name");
+            RibbonPanel m_projectPanel = application.CreateRibbonPanel(tabName, "Main");
 
             // Add the buttons to the panel
             List<RibbonItem> projectButtons = new List<RibbonItem>();

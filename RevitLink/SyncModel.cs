@@ -16,8 +16,15 @@ namespace Venatu.SCL.RevitLink
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             //Get the current document
-            Document doc = commandData.Application.ActiveUIDocument.Document;
+            Document doc = BuildModel(commandData.Application.ActiveUIDocument.Document);
+            
+            //Sync the results back
 
+            return Result.Succeeded;
+        }
+
+        public static Document BuildModel(Autodesk.Revit.DB.Document doc)
+        {
             BuiltInCategory[] bics = new BuiltInCategory[] {
     BuiltInCategory.OST_StructuralColumns,
     BuiltInCategory.OST_StructuralFraming,
@@ -63,29 +70,40 @@ namespace Venatu.SCL.RevitLink
             collector.WherePasses(classFilter);
             var filteredElements = collector.ToElements();
 
-            
+            //Build the document ready for analysis
+            Venatu.SCL.Document analysisDoc = new Document();
 
-            foreach(Element e in filteredElements)
+            foreach (Element e in filteredElements)
             {
-                /*
-                var analytical = e.GetAnalyticalModel();                
-                var materials = e.GetMaterialIds(false);
-                var mat = doc.GetElement(materials.ElementAt(0));
-                var yield = mat.get_Parameter(BuiltInParameter.PHY_MATERIAL_PARAM_MINIMUM_YIELD_STRESS);
-                var temp = yield.AsValueString();
-                var youngs = mat.get_Parameter(BuiltInParameter.PHY_MATERIAL_PARAM_YOUNG_MOD);
-                temp = youngs.AsValueString();*/
+                StructuralMember member = new StructuralMember(e.UniqueId);
 
-                var structID = e.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
+                Curve analyticalCurve = e.GetAnalyticalModel().GetCurve();
+                var start = analyticalCurve.GetEndPoint(0);
+                var end = analyticalCurve.GetEndPoint(1);
+
+                Joint startJoint = new Joint();
+                startJoint.X = start.X;
+                startJoint.Y = start.Y;
+                startJoint.Z = start.Z;
+
+                Joint endJoint = new Joint();
+                endJoint.X = end.X;
+                endJoint.Y = end.Y;
+                endJoint.Z = end.Z;
+
+                analysisDoc.AddMember(member, startJoint, endJoint);
+
+                /*var structID = e.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM);
                 var material = doc.GetElement(structID.AsElementId()) as Material;
-                var properties = doc.GetElement(material.StructuralAssetId);
+                var properties = doc.GetElement(material.StructuralAssetId);                
 
-                var yield = properties.get_Parameter(BuiltInParameter.PHY_MATERIAL_PARAM_MINIMUM_YIELD_STRESS).AsValueString();              
-                
+                var yield = properties.get_Parameter(BuiltInParameter.PHY_MATERIAL_PARAM_MINIMUM_YIELD_STRESS).AsValueString();
 
+                var type = doc.GetElement(e.GetTypeId());
+                var webThickness = type.get_Parameter(BuiltInParameter.STRUCTURAL_SECTION_ISHAPE_FLANGETHICKNESS).AsValueString();  */
             }
 
-            return Result.Succeeded;
+            return analysisDoc;
         }
     }
 }
