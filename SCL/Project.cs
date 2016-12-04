@@ -14,7 +14,7 @@ namespace Venatu.SCL
 
         public string Description { get; set; }
 
-        public List<Revision> Revisions;
+        public List<Revision> Revisions { get; set; }
 
         public Project()
         {

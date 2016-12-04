@@ -24,5 +24,10 @@ namespace Venatu.SCL.UI
         {
             InitializeComponent();
         }
+
+        private void dataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            MainWindow.Current.BuildTree();
+        }
     }
 }

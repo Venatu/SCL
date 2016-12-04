@@ -8,6 +8,13 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid Background="#FFE5E5E5">
         <TextBox x:Name="ProjectName" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="{Binding Name}" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="textBox" Height="79" Margin="10,38,10,0" TextWrapping="Wrap" Text="{Binding Description}" VerticalAlignment="Top"/>
+        <DataGrid x:Name="dataGrid" Margin="10,122,10,10" ItemsSource="{Binding AnalysisObjects}" RowEditEnding="dataGrid_RowEditEnding" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Name}" Header="Name" Width="80*"/>
+                <DataGridTextColumn Binding="{Binding Utilisation}" Header="Utilisation" Width="20*" IsReadOnly="True"/>                
+            </DataGrid.Columns>
+        </DataGrid>
 
     </Grid>
 </UserControl>

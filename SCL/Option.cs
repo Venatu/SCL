@@ -9,7 +9,13 @@ namespace Venatu.SCL
     public class Option
     {
         public string Name { get; set; }
+        public double Utilisation { get; set; }
 
-        public List<IDesignElement> Elements;
+        public List<IDesignElement> Elements { get; set; }
+
+        public Option()
+        {
+            Elements = new List<IDesignElement>();            
+        }
     }
 }

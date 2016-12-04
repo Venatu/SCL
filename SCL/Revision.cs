@@ -10,8 +10,9 @@ namespace Venatu.SCL
     {
         public string Name { get; set; }
         public string Date { get; set; }
+        public string Description { get; set; }
 
-        public List<Option> AnalysisObjects;
+        public List<Option> AnalysisObjects { get; set; }
 
         public Revision()
         {

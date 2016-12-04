@@ -8,6 +8,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid Background="#FFE5E5E5">
         <TextBox x:Name="ProjectName" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="{Binding Name}" VerticalAlignment="Top" Width="120"/>
+        <ComboBox x:Name="comboBox" Margin="135,10,10,0" VerticalAlignment="Top" ItemsSource="{Binding Elements}"/>
 
     </Grid>
 </UserControl>

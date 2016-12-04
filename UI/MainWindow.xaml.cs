@@ -18,15 +18,26 @@ using Venatu.SCL;
 using Venatu.SCL.AnalysisEngine;
 using Venatu.SCL.UI;
 
-namespace UI
+namespace Venatu.SCL.UI
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static MainWindow Current
+        {
+            get
+            {
+                return _Current;
+            }
+        }
+
+        static MainWindow _Current;
+
         public MainWindow()
         {
+            _Current = this;
             Projects = new List<Project>();
 
             InitializeComponent();
@@ -46,7 +57,7 @@ namespace UI
             BuildTree();
         }
 
-        private void BuildTree()
+        public void BuildTree()
         {
             while (treeOutline.Items.Count > 0)
             {
@@ -93,8 +104,15 @@ namespace UI
                     foreach (Option o in r.AnalysisObjects)
                     {
                         TreeViewItem optionItem = new TreeViewItem();
+                        optionItem.MouseDoubleClick += new MouseButtonEventHandler(delegate (Object obj, MouseButtonEventArgs a)
+                        {
+                            if (((TreeViewItem)obj).IsSelected)
+                            {
+                                CreateTabItem(o);
+                            }
+                        });
                         Binding optionBinding = new Binding();
-                        optionBinding.Source = p;
+                        optionBinding.Source = o;
                         optionBinding.Mode = BindingMode.TwoWay;
                         optionBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
                         optionBinding.Path = new PropertyPath("Name");
