@@ -14,7 +14,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Venatu.SCL;
 using Venatu.SCL.AnalysisEngine;
+using Venatu.SCL.UI;
 
 namespace UI
 {
@@ -25,79 +27,127 @@ namespace UI
     {
         public MainWindow()
         {
-            InitializeComponent();            
+            Projects = new List<Project>();
+
+            InitializeComponent();
+
+            BuildTree();     
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
+        public List<Project> Projects;
+
+        private void button_Click_1(object sender, RoutedEventArgs e)
         {
-            Example2();
+            Project p = new Project();
+            CreateTabItem(p);
+
+            Projects.Add(p);
+
+            BuildTree();
         }
 
-        public void Example1()
+        private void BuildTree()
         {
-            Model m = new Model(6, 3, 2, 3, 10, 3);
+            while (treeOutline.Items.Count > 0)
+            {
+                treeOutline.Items.RemoveAt(0);
+            }
 
-            m.SetSupport(0, 0, 1, 1);
-            m.SetSupport(1, 2, 0, 1);
-            m.SetSupport(2, 3, 0, 1);
+            foreach(Project p in Projects)
+            {
+                //Bind to the porjects properties
+                TreeViewItem treeItem = new TreeViewItem();
+                Binding projectBinding = new Binding();
+                projectBinding.Source = p;
+                projectBinding.Mode = BindingMode.TwoWay;
+                projectBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+                projectBinding.Path = new PropertyPath("ProjectName");
+                BindingOperations.SetBinding(treeItem, TreeViewItem.HeaderProperty, projectBinding);
 
-            m.SetJointCoordinate(0, 0, 0);
-            m.SetJointCoordinate(1, 288, 0);
-            m.SetJointCoordinate(2, 576, 0);
-            m.SetJointCoordinate(3, 864, 0);
-            m.SetJointCoordinate(4, 288, 216);
-            m.SetJointCoordinate(5, 576, 216);
+                treeItem.MouseDoubleClick += new MouseButtonEventHandler(delegate (Object o, MouseButtonEventArgs a)
+                {
+                    if (((TreeViewItem)o).IsSelected)
+                    {
+                        CreateTabItem(p);
+                    }
+                });
 
-            m.SetMaterial(0, 29000);
-            m.SetMaterial(1, 10000);
+                //Iterate through its revisions
+                foreach (Revision r in p.Revisions)
+                {
+                    TreeViewItem revisionItem = new TreeViewItem();
+                    revisionItem.MouseDoubleClick += new MouseButtonEventHandler(delegate (Object o, MouseButtonEventArgs a)
+                    {
+                        if (((TreeViewItem)o).IsSelected)
+                        {
+                            CreateTabItem(r);
+                        }
+                    });
+                    Binding revisionBinding = new Binding();
+                    revisionBinding.Source = r;
+                    revisionBinding.Mode = BindingMode.TwoWay;
+                    revisionBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+                    revisionBinding.Path = new PropertyPath("Name");
+                    BindingOperations.SetBinding(revisionItem, TreeViewItem.HeaderProperty, revisionBinding);
 
-            m.SetSection(0, 8);
-            m.SetSection(1, 12);
-            m.SetSection(2, 16);
+                    foreach (Option o in r.AnalysisObjects)
+                    {
+                        TreeViewItem optionItem = new TreeViewItem();
+                        Binding optionBinding = new Binding();
+                        optionBinding.Source = p;
+                        optionBinding.Mode = BindingMode.TwoWay;
+                        optionBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+                        optionBinding.Path = new PropertyPath("Name");
+                        BindingOperations.SetBinding(optionItem, TreeViewItem.HeaderProperty, optionBinding);
 
-            m.SetMember(0, 0, 1, 0, 0);
-            m.SetMember(1, 1, 2, 0, 0);
-            m.SetMember(2, 2, 3, 1, 2);
-            m.SetMember(3, 4, 5, 0, 0);
-            m.SetMember(4, 1, 4, 0, 0);
-            m.SetMember(5, 2, 5, 0, 0);
-            m.SetMember(6, 0, 4, 0, 1);
-            m.SetMember(7, 1, 5, 0, 1);
-            m.SetMember(8, 2, 4, 0, 1);
-            m.SetMember(9, 3, 5, 1, 2);
+                        revisionItem.Items.Add(optionItem);
+                    }
 
-            m.SetLoad(0, 1, 0, -75);
-            m.SetLoad(1, 4, 25, 0);
-            m.SetLoad(2, 5, 0, -60);
+                    treeItem.Items.Add(revisionItem);
+                }
 
-            m.Calculate();
+                treeOutline.Items.Add(treeItem);
+            }
         }
 
-        public void Example2()
+        private void CreateTabItem(object item)
         {
-            Model m = new Model(4, 3, 1, 2, 3, 1);
+            TabItem tb = new TabItem();
 
-            m.SetJointCoordinate(0, 12 * 12, 16 * 12);
-            m.SetJointCoordinate(1, 0, 0);
-            m.SetJointCoordinate(2, 12 * 12, 0);
-            m.SetJointCoordinate(3, 24 * 12, 0);
+            Binding headerBinding = new Binding();
+            headerBinding.Source = item;
+            headerBinding.Mode = BindingMode.TwoWay;
+            headerBinding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;            
 
-            m.SetSupport(0, 1, 1, 1);
-            m.SetSupport(1, 2, 1, 1);
-            m.SetSupport(2, 3, 1, 1);
+            if (item is Project)
+            {
+                headerBinding.Path = new PropertyPath("ProjectName");
+                ProjectControl pc = new ProjectControl();
+                pc.DataContext = item;
+                tb.Content = pc;
+            }
+            if (item is Revision)
+            {
+                headerBinding.Path = new PropertyPath("Name");
+                RevisionControl pc = new RevisionControl();
+                pc.DataContext = item;
+                tb.Content = pc;
+            }
+            if (item is Option)
+            {
+                headerBinding.Path = new PropertyPath("Name");
+                OptionControl pc = new OptionControl();
+                pc.DataContext = item;
+                tb.Content = pc;
+            }
 
-            m.SetMaterial(0, 29000);
+            BindingOperations.SetBinding(tb, TabItem.HeaderProperty, headerBinding);
+            detailView.Items.Add(tb);
+        }
 
-            m.SetSection(0, 8);
-            m.SetSection(1, 6);
-
-            m.SetMember(0, 1, 0, 0, 0);
-            m.SetMember(1, 2, 0, 0, 1);
-            m.SetMember(2, 3, 0, 0, 0);
-
-            m.SetLoad(0, 0, 150, -300);
-
-            m.Calculate();
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //Save on exit
         }
     }
 }

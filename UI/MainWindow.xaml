@@ -5,9 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="569.608" Width="895.588" Closing="Window_Closing">
     <Grid>
-        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Height="37" Margin="119,95,0,0" VerticalAlignment="Top" Width="235" Click="button_Click"/>
+        <TreeView x:Name="treeOutline" HorizontalAlignment="Left" Margin="10,10,0,10" Width="150"/>
+        <TabControl x:Name="detailView" Margin="165,10,10,10">
+            <TabItem Header="Start Page">
+                <Grid Background="#FFE5E5E5">
+                    <Button x:Name="button" Content="New Project" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top" Width="75" Click="button_Click_1"/>
+                    <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Welcome. Press the button below to create a new project or use the navigation pane to the left to edit an existing." VerticalAlignment="Top" Height="51" Width="687"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
 
     </Grid>
 </Window>
