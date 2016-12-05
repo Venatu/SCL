@@ -7,11 +7,18 @@ using Venatu.SCL.AnalysisEngine.Load;
 
 namespace Venatu.SCL.AnalysisEngine
 {
-    class AnalysisMember
+    public class LoadAnalysis
     {
+        public const double G = 9.81;
+
         public List<ILoad> Loads;
 
-        double GetMoment(double distance)
+        public LoadAnalysis()
+        {
+            Loads = new List<ILoad>();
+        }
+
+        public double GetMoment(double distance)
         {
             double total = 0;
             foreach(ILoad l in Loads)
@@ -21,7 +28,7 @@ namespace Venatu.SCL.AnalysisEngine
             return total;
         }
 
-        double GetShear(double distance)
+        public double GetShear(double distance)
         {
             double total = 0;
             foreach (ILoad l in Loads)
@@ -31,7 +38,7 @@ namespace Venatu.SCL.AnalysisEngine
             return total;
         }
 
-        double GetDeflection(double distance)
+        public double GetDeflection(double distance)
         {
             double total = 0;
             foreach (ILoad l in Loads)

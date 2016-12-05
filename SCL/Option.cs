@@ -15,7 +15,8 @@ namespace Venatu.SCL
 
         public Option()
         {
-            Elements = new List<IDesignElement>();            
+            Elements = new List<IDesignElement>();       
+            Elements.Add(new SteelDesignElement());
         }
     }
 }

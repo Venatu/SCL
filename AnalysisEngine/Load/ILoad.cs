@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Venatu.SCL.AnalysisEngine.Load
 {
-    interface ILoad
+    public interface ILoad
     {
         double GetShear(double distance);
 

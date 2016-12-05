@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Venatu.SCL.AnalysisEngine.Load
 {
-    class UDL : ILoad
+    public class UDL : ILoad
     {
         double magnitude, length;
 
@@ -18,7 +18,7 @@ namespace Venatu.SCL.AnalysisEngine.Load
 
         public double GetDeflection(double distance)
         {
-            return magnitude * distance / 24f * (Math.Pow(length, 3) - 2 * length * Math.Pow(distance, 2) + Math.Pow(distance, 3));
+            return magnitude*1000 * distance / 24f * (Math.Pow(length*1000, 3) - (2 * length*1000 * Math.Pow(distance*1000, 2)) + Math.Pow(distance*1000, 3));
         }
 
         public double GetMoment(double distance)

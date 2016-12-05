@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace Venatu.SCL
 {
-    public class IDesignElement
-    {
+    public interface IDesignElement
+    {       
+        void Analyze();
+
+        double ULSUsage(double pos);
+
+        double SLSUsage(double pos);
     }
 }

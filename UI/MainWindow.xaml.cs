@@ -42,7 +42,7 @@ namespace Venatu.SCL.UI
 
             InitializeComponent();
 
-            BuildTree();     
+            BuildTree();
         }
 
         public List<Project> Projects;

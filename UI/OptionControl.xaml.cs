@@ -23,6 +23,33 @@ namespace Venatu.SCL.UI
         public OptionControl()
         {
             InitializeComponent();
+
+        }
+
+        private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var designElement = (IDesignElement)((ComboBox)sender).SelectedItem;
+
+            if(designElement is SteelDesignElement)
+            {
+                placeholder.Children.Clear();
+                SteelElement se = new SteelElement(designElement as SteelDesignElement);
+                placeholder.Children.Add(se);
+            }
+        }
+
+        private void comboBox_DropDownOpened(object sender, EventArgs e)
+        {
+            var bindingExpression = options.GetBindingExpression(ComboBox.ItemsSourceProperty);
+            //bindingExpression.UpdateSource();
+            var obj = this.DataContext;
+            this.DataContext = null;
+            this.DataContext = obj;
+        }
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            ((Option)this.DataContext).Elements.Add(new SteelDesignElement());
         }
     }
 }
